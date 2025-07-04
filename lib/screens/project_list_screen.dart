@@ -142,6 +142,44 @@ class _ProjectListScreenState extends State<ProjectListScreen> {
       ),
     );
   }
+  void _renameProject(int index) {
+    final project = projectBox.getAt(index);
+    if (project == null) return;
+
+    final controller = TextEditingController(text: project.name);
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Rename Project'),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          decoration: const InputDecoration(
+            hintText: 'Enter new name',
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              final newName = controller.text.trim();
+              if (newName.isNotEmpty && newName != project.name) {
+                project.name = newName;
+                project.save();
+                setState(() {});
+              }
+              Navigator.of(context).pop();
+            },
+            child: const Text('Save'),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   void dispose() {
@@ -195,6 +233,10 @@ class _ProjectListScreenState extends State<ProjectListScreen> {
                       IconButton(
                         icon: const Icon(Icons.delete, color: Colors.grey),
                         onPressed: () => _confirmDelete(index),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.edit, color: Colors.blueAccent),
+                        onPressed: () => _renameProject(index),
                       ),
                     ],
                   ),
